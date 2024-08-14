@@ -1,15 +1,21 @@
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { CreateUserDto } from './dto/createUser.dto';
-import { UserRole } from './enum/userRoles.enum';
 import {
   ConflictException,
+  Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { CreateUserDto } from './dto/createUser.dto';
+import { UserRole } from './enum/userRoles.enum';
 
+@Injectable()
 export class UserRepository extends Repository<User> {
+  constructor(private dataSource: DataSource) {
+    super(User, dataSource.createEntityManager());
+  }
+
   async createUser(
     createUserDto: CreateUserDto,
     role: UserRole,
